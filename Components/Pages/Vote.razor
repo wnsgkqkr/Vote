@@ -1,0 +1,45 @@
+﻿@page "/vote"
+
+@inject GlobalState GlobalState
+@rendermode InteractiveServer
+
+<PageTitle>Vote</PageTitle>
+
+@if (!isVoteFinished)
+{
+    <h1>원하는 항목에 투표하세요: </h1>
+
+    for(int i = 0; i < @GlobalState.votes.Length; i ++) {
+        int index = i;
+        <p role="status"><button class="btn btn-primary" @onclick="() => vote(index)">[투표 항목 @(index+1) 버튼]</button>  현재 득표수: @GlobalState.votes[index]</p>
+    }
+}
+else
+{
+    <h1>투표가 완료되었습니다. 결과를 확인하세요: </h1>
+
+    for(int i = 0; i < @GlobalState.votes.Length; i ++) {
+        int index = i;
+        <p role="status">  항목 @(index+1): @GlobalState.votes[index]표 (@calculateVotePercent(index)%)</p>
+    }
+}
+
+@code {
+    private bool isVoteFinished = false;
+
+    private void vote(int index)
+    {
+        GlobalState.votes[index]++;
+        isVoteFinished = true;
+    }
+
+    private double calculateVotePercent(int index)
+    {
+        double total = 0;
+        for (int i = 0; i < GlobalState.votes.Length; i++) {
+            total += GlobalState.votes[i];
+        }
+
+        return GlobalState.votes[index] / total * 100;
+    }
+}
